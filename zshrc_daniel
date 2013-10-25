@@ -1,0 +1,139 @@
+# Path to your oh-my-zsh configuration.
+ZSH=$HOME/.oh-my-zsh
+
+#My additions
+alias subl='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl'
+alias edit='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl'
+alias PDFconcat='/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py'
+alias skimnotes='/Applications/Skim.app/Contents/SharedSupport/skimnotes get -format txt'
+alias skimpdf ='/Applications/Skim.app/Contents/SharedSupport/skimpdf'
+
+# Function to set-up a new project git
+function np(){
+  if [ -e $1 ]; then
+    echo "Project $1 already exists!"
+  else
+    mkdir $1
+    cd $1
+    mkdir data
+    mkdir doc
+    mkdir figs
+    mkdir output
+    mkdir R
+    touch analysis.r
+    git init
+    echo "output/" >> .gitignore
+    echo "figs/" >> .gitignore
+
+    mv .git/hooks/pre-commit.sample .git/hooks/pre-commit
+  fi
+}
+
+# Set to this to use case-sensitive completion
+CASE_SENSITIVE="true"
+
+# Comment this out to disable weekly auto-update checks
+DISABLE_AUTO_UPDATE="true"
+
+# So far as I can see, Oh-My-Zsh's tite renaming is broken
+DISABLE_AUTO_TITLE="true"
+case $TERM in
+    *xterm*|rxvt|(dt|k|E)term|vt100)
+    # display user@host and full dir in *term title
+    precmd () {
+        print -Pn  "\033]0;%n@%m %~\007"
+    }
+    # display user@host and name of current process in *term title
+    preexec () {
+        print -Pn "\033]0;%n@%m <$1> %~\007"
+    }
+    ;;
+esac
+
+plugins=(git osx)
+
+source $ZSH/oh-my-zsh.sh
+
+## This reimplements the theme.
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$reset_color%}%{$fg[white]%}["
+ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[red]%}●%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_DIRTY_LOCAL="%{$fg[red]%}●%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_DIRTY_GLOBAL="%{$fg[red]%}●%{$reset_color%}/%{$fg[green]%}●%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[green]%}●%{$reset_color%}"
+git_custom_status() {
+  local cb=$(current_branch)
+  if [ -n "$cb" ]; then
+    echo "$ZSH_THEME_GIT_PROMPT_PREFIX$(current_branch)$(parse_git_dirty_local)$ZSH_THEME_GIT_PROMPT_SUFFIX"
+  fi
+}
+
+parse_git_dirty_local() {
+  local SUBMODULE_SYNTAX=''
+  if [[ $POST_1_7_2_GIT -gt 0 ]]; then
+        SUBMODULE_SYNTAX="--ignore-submodules=dirty"
+  fi
+  if [[ -n $(git status -s ${SUBMODULE_SYNTAX}  2> /dev/null) ]]; then
+      if [[ -n $(git status -s ${SUBMODULE_SYNTAX} . 2> /dev/null) ]]; then
+	  # Dirty globally and locally
+	  echo "$ZSH_THEME_GIT_PROMPT_DIRTY_LOCAL"
+      else # Dirty somewhere not below here
+	  echo "$ZSH_THEME_GIT_PROMPT_DIRTY_GLOBAL"
+      fi
+  else # clean everywhere
+    echo "$ZSH_THEME_GIT_PROMPT_CLEAN"
+  fi
+}
+
+function ssh_connection() {
+  if [[ -n $SSH_CONNECTION ]]; then
+    echo "%{$fg_bold[red]%}%n@%m:%{$reset_color%}"
+  fi
+}
+
+PROMPT='$(ssh_connection)%B%~ %b» '
+RPROMPT='$(git_custom_status)'
+## White directories.
+export LSCOLORS='Hxfxcxdxbxegedabagacad'
+
+
+## Pagers
+export PAGER=`which less`
+## export LESSOPEN='|lesspipe %s'
+export LESSCHARSET='latin1'
+
+path=(/Users/dfalster/bin /Users/dfalster/.rbenv/bin $path)
+export path
+
+eval "$(rbenv init -)"
+
+## Disable spell checking
+unsetopt correct_all
+setopt interactive_comments
+
+## Emacs/tramp avoid hang
+if [[ "$TERM" == "dumb" ]]
+then
+  unsetopt zle
+  unsetopt prompt_cr
+  unsetopt prompt_subst
+  unfunction precmd
+  unfunction preexec
+  PS1='$ '
+fi
+
+## CPU time reporting: if execution time exceeds this, then usage
+## statistics will be printed.
+REPORTTIME=5
+
+zstyle ':completion:*:*:*:users' ignored-patterns \
+        adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
+        dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
+        hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
+        mailman mailnull mldonkey mysql nagios \
+        named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
+        operator pcap postfix postgres privoxy pulse pvm quagga radvd \
+        rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs '_*'
+
+zstyle ':completion:*:functions' ignored-patterns '_*'
+
