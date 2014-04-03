@@ -41,3 +41,70 @@ plugins=(git osx)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
+
+## This reimplements the theme.
+# ZSH_THEME_GIT_PROMPT_PREFIX="%{$reset_color%}%{$fg[white]%}["
+# ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
+# ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[red]%}●%{$reset_color%}"
+# ZSH_THEME_GIT_PROMPT_DIRTY_LOCAL="%{$fg[red]%}●%{$reset_color%}"
+# ZSH_THEME_GIT_PROMPT_DIRTY_GLOBAL="%{$fg[red]%}●%{$reset_color%}/%{$fg[green]%}●%{$reset_color%}"
+# ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[green]%}●%{$reset_color%}"
+# git_custom_status() {
+#  local cb=$(current_branch)
+#  if [ -n "$cb" ]; then
+#    echo "$ZSH_THEME_GIT_PROMPT_PREFIX$(current_branch)$(parse_git_dirty_local)$ZSH_THEME_GIT_PROMPT_SUFFIX"
+#  fi
+# }
+#
+# parse_git_dirty_local() {
+#  local SUBMODULE_SYNTAX=''
+#  if [[ $POST_1_7_2_GIT -gt 0 ]]; then
+#        SUBMODULE_SYNTAX="--ignore-submodules=dirty"
+#   fi
+#  if [[ -n $(git status -s ${SUBMODULE_SYNTAX}  2> /dev/null) ]]; then
+#     if [[ -n $(git status -s ${SUBMODULE_SYNTAX} . 2> /dev/null) ]]; then
+#	  # Dirty globally and locally
+#	  echo "$ZSH_THEME_GIT_PROMPT_DIRTY_LOCAL"
+#     else # Dirty somewhere not below here
+#	  echo "$ZSH_THEME_GIT_PROMPT_DIRTY_GLOBAL"
+#     fi
+#  else # clean everywhere
+#    echo "$ZSH_THEME_GIT_PROMPT_CLEAN"
+#  fi
+# }
+#
+
+# function ssh_connection() {
+#  if [[ -n $SSH_CONNECTION ]]; then
+#    echo "%{$fg_bold[red]%}%n@%m:%{$reset_color%}"
+#  fi
+#}
+
+# PROMPT='$(ssh_connection)%B%~ %b» '
+# RPROMPT='$(git_custom_status)'
+## White directories.
+# export LSCOLORS='Hxfxcxdxbxegedabagacad'
+
+
+## Pagers
+export PAGER=`which less`
+
+
+## Disable spell checking
+unsetopt correct_all
+setopt interactive_comments
+
+zstyle ':completion:*:*:*:users' ignored-patterns \
+        adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
+        dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
+        hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
+        mailman mailnull mldonkey mysql nagios \
+        named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
+        operator pcap postfix postgres privoxy pulse pvm quagga radvd \
+        rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs '_*'
+
+zstyle ':completion:*:functions' ignored-patterns '_*'
+
+path=(/usr/local/bin $HOME/Dropbox/Library/bin $path )
+export path
+
